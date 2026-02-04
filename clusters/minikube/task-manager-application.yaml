@@ -1,20 +1,54 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
+# Argo CD Application resource to manage task-manager deployment
+# This resource tells Argo CD how to synchronize the repository with the cluster
+
+apiVersion: argoproj.io/v1alpha1  # API version for Argo CD Application resources
+kind: Application  # Resource type: Application (manages automatic synchronization)
+
 metadata:
-  name: task-manager
-  namespace: argocd
+  name: task-manager  # Name of the application in Argo CD
+  namespace: argocd  # Created in the Argo CD namespace
+
 spec:
+  # Argo CD project to use (default: "default")
+  # Projects allow grouping and controlling permissions for applications
   project: default
+
+  # Source repository configuration (origin of the configuration)
   source:
+    # URL of the Git repository containing the manifests
     repoURL: https://github.com/jesuslabtech/task-manager-gitops
+    
+    # Branch/tag/commit to use from the repository
+    # "main" indicates always using the main branch
     targetRevision: main
+    
+    # Path within the repository where manifests are located
+    # Argo CD will use Kustomize to build manifests from this path
     path: apps/task-manager/overlays/minikube
+
+  # Destination configuration (where resources are deployed)
   destination:
+    # URL of the Kubernetes API server
+    # "https://kubernetes.default.svc" is the current cluster (minikube)
     server: https://kubernetes.default.svc
+    
+    # Namespace where resources will be deployed
+    # Argo CD will create resources in the "learning" namespace
     namespace: learning
+
+  # Automatic synchronization policy
   syncPolicy:
+    # Additional synchronization options
     syncOptions:
+      # If the namespace doesn't exist, Argo CD will create it automatically
       - CreateNamespace=true
+    
+    # Automatic synchronization configuration
     automated:
+      # Automatically deletes resources that exist in the cluster but not in Git
+      # This ensures the cluster always reflects exactly what's in Git
       prune: true
+      
+      # If the cluster drifts from the desired state, automatically synchronizes it
+      # This "heals" manual changes that don't come from Git
       selfHeal: true
