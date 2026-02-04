@@ -5,11 +5,10 @@ metadata:
   labels:
     app: task-manager
 spec:
-  type: ClusterIP
-  ports:
-  - port: 80
-    targetPort: 3000
-    protocol: TCP
-    name: http
+  type: NodePort
   selector:
     app: task-manager
+  ports:
+    - port: 80         # Service internal port
+      targetPort: 3000 # Pod port
+      nodePort: 32080  # Node external port
