@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: task-manager
-        image: your-dockerhub-user/task-manager:0.1.0
+        image: jlabtech/task-manager:0.1.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
