@@ -12,7 +12,7 @@ patches:
 
 images:
   - name: task-manager
-    newTag: latest
+    newTag: 0.2.2
 
 labels:
 - includeSelectors: true
