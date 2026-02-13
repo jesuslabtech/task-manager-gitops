@@ -1,0 +1,25 @@
+# Argo CD Application resource for DEV environment
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: task-manager-dev
+  namespace: argocd
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/jesuslabtech/task-manager-gitops
+    targetRevision: main
+    path: apps/task-manager/overlays/dev
+
+  destination:
+    server: https://d9365f90-e8db-44da-ac54-175eac736387.eu-central-1-gw.linodelke.net:443
+    namespace: dev
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false
+    automated:
+      prune: true
+      selfHeal: true
