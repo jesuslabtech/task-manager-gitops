@@ -11,4 +11,5 @@ spec:
   ports:
     - port: 80         # Service internal port
       targetPort: 3000 # Pod port
-      nodePort: 32080  # Node external port
+      nodePort: 32080  # Node external port (dev)
+      protocol: TCP
