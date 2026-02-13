@@ -14,7 +14,7 @@ spec:
     path: apps/task-manager/overlays/prod
 
   destination:
-    server: https://d9365f90-e8db-44da-ac54-175eac736387.eu-central-1-gw.linodelke.net:443
+    server: https://kubernetes.default.svc
     namespace: prod
 
   syncPolicy:
