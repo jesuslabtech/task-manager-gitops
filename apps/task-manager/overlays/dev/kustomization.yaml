@@ -11,7 +11,7 @@ patches:
 
 images:
   - name: jlabtech/task-manager
-    newTag: d0d5db72945d87a1d237c1ba96ff212b03b33226
+    newTag: 076ba726e3e66e98556d3dfa07557abf415da54a
 
 labels:
 - includeSelectors: true
