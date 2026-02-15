@@ -11,7 +11,7 @@ patches:
 
 images:
   - name: task-manager
-    newTag: sha-c9ecb283aef2f4b0b578cd747f59c96ec91ce80f
+    newTag: d0d5db72945d87a1d237c1ba96ff212b03b33226
 
 labels:
 - includeSelectors: true
