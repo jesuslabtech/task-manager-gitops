@@ -8,7 +8,7 @@ patches:
   - path: patch-service.yaml
 images:
   - name: jlabtech/task-manager
-    newTag: 0.2.4
+    newTag: 076ba726e3e66e98556d3dfa07557abf415da54a
 labels:
   - includeSelectors: true
     pairs:
