@@ -1,57 +1,57 @@
-# Guía Rápida de Despliegue
+# Quick Deployment Guide
 
-## ⚠️ Prerequisito: Instalar ArgoCD
+## ⚠️ Prerequisite: Install ArgoCD
 
-**ArgoCD debe estar instalado antes de crear las Applications.**
+**ArgoCD must be installed before creating the Applications.**
 
 ```bash
-# Crear namespace de ArgoCD
+# Create ArgoCD namespace
 kubectl create namespace argocd
 
-# Instalar ArgoCD
+# Install ArgoCD
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-# Esperar a que esté listo (2-3 minutos)
+# Wait for it to be ready (2-3 minutes)
 kubectl wait --for=condition=available --timeout=300s \
   deployment/argocd-application-controller -n argocd
 
-# Verificar
+# Verify
 kubectl get pods -n argocd
 ```
 
-## 1️⃣ Crear Namespaces
+## 1️⃣ Create Namespaces
 
 ```bash
 kubectl apply -f clusters/single-cluster/namespace-dev.yaml
 kubectl apply -f clusters/single-cluster/namespace-prod.yaml
 
-# Verificar
+# Verify
 kubectl get namespaces -l app=task-manager
 ```
 
-## 2️⃣ Crear Applications en ArgoCD
+## 2️⃣ Create Applications in ArgoCD
 
-Los namespaces deben existir previamente.
+The namespaces must exist first.
 
-**⚠️ Nota:** Si tu cluster no es `localhost` (en Minikube/local), actualiza el endpoint en:
+**⚠️ Note:** If your cluster is not `localhost` (What this means is if your argocd app is in the same cluster of your app or not), update the endpoint in:
 - `clusters/single-cluster/task-manager-dev-application.yaml`
 - `clusters/single-cluster/task-manager-prod-application.yaml`
 
-Busca `destination.server` y reemplaza con tu Kubernetes API endpoint.
+Find `destination.server` and replace with your Kubernetes API endpoint.
 
 ```bash
-# Aplicar uno a uno
+# Apply one by one
 kubectl apply -f clusters/single-cluster/task-manager-dev-application.yaml
 kubectl apply -f clusters/single-cluster/task-manager-prod-application.yaml
 
-# O usar Kustomize para todo junto
+# Or use Kustomize for everything together
 kubectl apply -k clusters/single-cluster/
 
-# Verificar
+# Verify
 kubectl get applications -n argocd -o wide
 ```
 
-## 3️⃣ Actualizar Imagen
+## 3️⃣ Update Image
 
 **Development:**
 ```bash
@@ -67,89 +67,89 @@ kustomize edit set image task-manager=my-registry/task-manager:v1.0.1
 cd -
 ```
 
-**Commit y Push:**
+**Commit and Push:**
 ```bash
 git add apps/task-manager/overlays/*/kustomization.yaml
 git commit -m "chore: update image tags"
 git push
 ```
 
-ArgoCD sincronizará automáticamente.
+ArgoCD will sync automatically.
 
-## 4️⃣ (Opcional) Despliegue Manual Una Sola Vez
+## 4️⃣ (Optional) Manual Deployment One-Time Only
 
-Si deseas aplicar manualmente los manifiestos (sin esperar a que ArgoCD sincronice):
+If you want to apply manifests manually (without waiting for ArgoCD to sync):
 
 ```bash
-# Compilar y aplicar dev
+# Compile and apply dev
 kubectl kustomize apps/task-manager/overlays/dev | kubectl apply -f -
 
-# Compilar y aplicar prod
+# Compile and apply prod
 kubectl kustomize apps/task-manager/overlays/prod | kubectl apply -f -
 
-# Verificar que se crearon
+# Verify they were created
 kubectl get pods -n dev -n prod
 ```
 
-Ver detalles en: **`MANUAL_DEPLOYMENT.md`**
+See details: **`MANUAL_DEPLOYMENT.md`**
 
-## 5️⃣ Acceder a ArgoCD Dashboard
+## 5️⃣ Access ArgoCD Dashboard
 
-### Exponer el servicio (elegir una opción):
+### Expose the service (choose one option):
 
-**Opción A: Port Forward (recomendado para desarrollo)**
+**Option A: Port Forward (recommended for development)**
 ```bash
-# Terminal 1: Exponer ArgoCD
+# Terminal 1: Expose ArgoCD
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 
-# Terminal 2: Obtener contraseña
+# Terminal 2: Get password
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d && echo ""
 
-# Acceder a: https://localhost:8080
-# Usuario: admin
-# Contraseña: (copiar del comando anterior)
+# Access at: https://localhost:8080
+# Username: admin
+# Password: (copy from previous command)
 ```
 
-**Opción B: LoadBalancer (para producción)**
+**Option B: LoadBalancer (for production)**
 ```bash
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-kubectl get svc -n argocd  # Ver IP externa
+kubectl get svc -n argocd  # See external IP
 ```
 
-## 6️⃣ Monitoreo
+## 6️⃣ Monitoring
 
 ```bash
-# Ver estado de Applications en ArgoCD
+# See Application status in ArgoCD
 kubectl get applications -n argocd -o wide
 
-# Ver deployments en dev
+# See deployments in dev
 kubectl get deployments -n dev -o wide
 kubectl get pods -n dev
 
-# Ver deployments en prod
+# See deployments in prod
 kubectl get deployments -n prod -o wide
 kubectl get pods -n prod
 
-# Ver logs
+# See logs
 kubectl logs -f -l app=task-manager -n dev
 kubectl logs -f -l app=task-manager -n prod
 ```
 
-## 7️⃣ Validación Local (Sin Desplegar)
+## 7️⃣ Local Validation (Without Deploying)
 
 ```bash
-# Ver manifiestos que se generarían en dev
+# See manifests that would be generated for dev
 kubectl kustomize apps/task-manager/overlays/dev
 
-# Ver manifiestos que se generarían en prod
+# See manifests that would be generated for prod
 kubectl kustomize apps/task-manager/overlays/prod
 
-# Ver manifiestos del cluster
+# See cluster manifests
 kubectl kustomize clusters/single-cluster/
 ```
 
-## 3️⃣ Actualizar Imagen
+## 3️⃣ Update Image
 
 **Development:**
 ```bash
@@ -165,15 +165,15 @@ kustomize edit set image task-manager=my-registry/task-manager:v1.0.1
 cd -
 ```
 
-**Commit y Push:**
+**Commit and Push:**
 ```bash
 git add apps/task-manager/overlays/*/kustomization.yaml
 git commit -m "chore: update image tags"
 git push
 ```
 
-ArgoCD sincronizará automáticamente.
+ArgoCD will sync automatically.
 
 ---
 
-**Todos los cambios van en Git → ArgoCD los sincroniza automáticamente.**
+**All changes go in Git → ArgoCD syncs them automatically.**

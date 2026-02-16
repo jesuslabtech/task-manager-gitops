@@ -1,16 +1,16 @@
-# 📐 Arquitectura Final - Single Cluster
+# 📐 Final Architecture - Single Cluster
 
-## Flujo Completo
+## Complete Flow
 
 ```
 ┌─────────────────────────────────────────────┐
 │        Git Repository (GitOps)              │
-│   task-manager-gitops (rama main)           │
+│   task-manager-gitops (main branch)         │
 └─────────────────────────────────────────────┘
               ↓ (push commits)
 ┌─────────────────────────────────────────────┐
-│          ArgoCD (en cluster)                │
-│      (argocd namespace)                     │
+│          ArgoCD (in cluster)                │
+│      (argocd namespace)                    │
 ├─────────────────────────────────────────────┤
 │                                             │
 │  Application: task-manager-dev              │
@@ -24,7 +24,7 @@
 │  └─ syncPolicy: automated                  │
 │                                             │
 └─────────────────────────────────────────────┘
-              ↓ (sincroniza)
+              ↓ (syncs)
 ┌─────────────────────────────────────────────────────────────┐
 │                  SINGLE CLUSTER                             │
 ├─────────────────────────────────────────────────────────────┤
@@ -35,13 +35,13 @@
 │  │                                                     │  │
 │  │  Deployment: task-manager                           │  │
 │  │  ├─ Replicas: 1 (dev)                              │  │
-│  │  ├─ Image: task-manager:latest                      │  │
-│  │  ├─ Environment: LOG_LEVEL=debug                    │  │
-│  │  └─ Labels: environment=dev                         │  │
+│  │  ├─ Image: task-manager:latest                     │  │
+│  │  ├─ Environment: LOG_LEVEL=debug                  │  │
+│  │  └─ Labels: environment=dev                        │  │
 │  │                                                     │  │
 │  │  Service: task-manager (ClusterIP:80)               │  │
 │  │  ConfigMap: task-manager-config                     │  │
-│  │  Secret: task-manager-secret                        │  │
+│  │  Secret: task-manager-secret                       │  │
 │  │                                                     │  │
 │  └─────────────────────────────────────────────────────┘  │
 │                                                             │
@@ -49,13 +49,13 @@
 │  │           Namespace: prod                           │  │
 │  ├─────────────────────────────────────────────────────┤  │
 │  │                                                     │  │
-│  │  Deployment: task-manager                           │  │
+│  │  Deployment: task-manager                          │  │
 │  │  ├─ Replicas: 3 (prod)                              │  │
 │  │  ├─ Image: task-manager:latest                      │  │
-│  │  ├─ Environment: LOG_LEVEL=info                     │  │
+│  │  ├─ Environment: LOG_LEVEL=info                   │  │
 │  │  └─ Labels: environment=prod                        │  │
 │  │                                                     │  │
-│  │  Service: task-manager (ClusterIP:80)               │  │
+│  │  Service: task-manager (ClusterIP:80)              │  │
 │  │  ConfigMap: task-manager-config                     │  │
 │  │  Secret: task-manager-secret                        │  │
 │  │                                                     │  │
@@ -64,7 +64,7 @@
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Estructura de Directorios Detallada
+## Detailed Directory Structure
 
 ```
 task-manager-gitops/
@@ -72,7 +72,7 @@ task-manager-gitops/
 ├── apps/
 │   └── task-manager/
 │       │
-│       ├── base/  (COMPARTIDA - sin cambios)
+│       ├── base/  (SHARED - unchanged)
 │       │   ├── deployment.yaml
 │       │   ├── service.yaml
 │       │   ├── configmap.yaml
@@ -104,7 +104,7 @@ task-manager-gitops/
 │           │   └── patch-deployment.yaml
 │           │       └── replicas: 3
 │           │
-│           └── minikube/  (REFERENCIA - mantener)
+│           └── minikube/  (REFERENCE - keep)
 │
 └── clusters/
     ├── single-cluster/
@@ -148,156 +148,105 @@ task-manager-gitops/
     │             destination:
     │               namespace: prod
     │
-    └── minikube/  (REFERENCIA - mantener)
+    └── minikube/  (REFERENCE - keep)
 ```
 
-## Flujo de Compilación Kustomize
+## Kustomize Build Flow
 
 ### Development
 ```
 kubectl kustomize apps/task-manager/overlays/dev
 
-1. Lee overlays/dev/kustomization.yaml
-2. Aplica bases (../../base) → deployment, service, configmap, secret
-3. Aplica namespace: dev → añade a todos los recursos
-4. Aplica patchesStrategicMerge (patch-deployment.yaml) → replicas: 1
-5. Aplica images (task-manager:latest)
-6. Aplica commonLabels (environment: dev)
+1. Read overlays/dev/kustomization.yaml
+2. Apply bases (../../base) → deployment, service, configmap, secret
+3. Apply namespace: dev → adds to all resources
+4. Apply patchesStrategicMerge (patch-deployment.yaml) → replicas: 1
+5. Apply images (task-manager:latest)
+6. Apply commonLabels (environment: dev)
 
-RESULTADO:
-- Deployment: task-manager con 1 replica en namespace dev
-- Service: task-manager en namespace dev
-- ConfigMap/Secret: en namespace dev
-- Etiquetas: environment=dev
+RESULT:
+- Deployment: task-manager with 1 replica in namespace dev
+- Service: task-manager in namespace dev
+- ConfigMap/Secret: in namespace dev
+- Labels: environment=dev
 ```
 
 ### Production
 ```
 kubectl kustomize apps/task-manager/overlays/prod
 
-1. Lee overlays/prod/kustomization.yaml
-2. Aplica bases (../../base) → deployment, service, configmap, secret
-3. Aplica namespace: prod → añade a todos los recursos
-4. Aplica patchesStrategicMerge (patch-deployment.yaml) → replicas: 3
-5. Aplica images (task-manager:latest)
-6. Aplica commonLabels (environment: prod)
+1. Read overlays/prod/kustomization.yaml
+2. Apply bases (../../base) → deployment, service, configmap, secret
+3. Apply namespace: prod → adds to all resources
+4. Apply patchesStrategicMerge (patch-deployment.yaml) → replicas: 3
+5. Apply images (task-manager:latest)
+6. Apply commonLabels (environment: prod)
 
-RESULTADO:
-- Deployment: task-manager con 3 replicas en namespace prod
-- Service: task-manager en namespace prod
-- ConfigMap/Secret: en namespace prod
-- Etiquetas: environment=prod
+RESULT:
+- Deployment: task-manager with 3 replicas in namespace prod
+- Service: task-manager in namespace prod
+- ConfigMap/Secret: in namespace prod
+- Labels: environment=prod
 ```
 
-## Ciclo de Vida de un Cambio
+## Change Lifecycle
 
 ```
-1. Developer hace cambio
-   └─ Edita overlays/dev/kustomization.yaml
-   └─ Cambia: newTag: v1.2.3
+1. Developer makes change
+   └─ Edit overlays/dev/kustomization.yaml
+   └─ Change: newTag: v1.2.3
 
 2. Git push
    └─ Commit: "chore: update dev image to v1.2.3"
-   └─ Push a rama main
+   └─ Push to main branch
 
-3. ArgoCD detecta
-   └─ Polling (cada 3 min) o webhook
-   └─ Ve nuevo commit
+3. ArgoCD detects
+   └─ Polling (every 3 min) or webhook
+   └─ Sees new commit
 
-4. ArgoCD compila
-   └─ Ejecuta: kubectl kustomize apps/task-manager/overlays/dev
-   └─ Genera manifiestos YAML
+4. ArgoCD compiles
+   └─ Executes: kubectl kustomize apps/task-manager/overlays/dev
+   └─ Generates YAML manifests
 
-5. ArgoCD sincroniza
-   └─ Compara vs cluster actual
-   └─ Detecta: imagen cambió de latest a v1.2.3
-   └─ Ejecuta: kubectl set image deployment/task-manager ...
+5. ArgoCD syncs
+   └─ Compares vs current cluster
+   └─ Detects: image changed from latest to v1.2.3
+   └─ Executes: kubectl set image deployment/task-manager ...
 
-6. Kubernetes actualiza
-   └─ Rolling update: termina Pod viejo, crea uno nuevo
-   └─ Mantiene servicio disponible
+6. Kubernetes updates
+   └─ Rolling update: terminates old Pod, creates new one
+   └─ Keeps service available
    └─ Health check: readinessProbe
 
-7. Convergencia
-   └─ Todos los Pods con nueva imagen
-   └─ ArgoCD marca como "Synced" ✓
+7. Convergence
+   └─ All Pods with new image
+   └─ ArgoCD marks as "Synced" ✓
 ```
 
-## Comparación: Antes vs Después
-
-### ANTES (Multi-Cluster)
-```
-Infrastructure:
-  - cluster-dev  (AWS)
-  - cluster-prod (AWS)
-  
-Cost:
-  - $400 × 2 = $800/mes
-
-Management:
-  - 2 clusters
-  - 2 ArgoCD instances
-  
-Git:
-  - gitops-dev repo
-  - gitops-prod repo
-  
-Deployment:
-  Dev  → cluster-dev
-  Prod → cluster-prod
-```
-
-### DESPUÉS (Single Cluster)
-```
-Infrastructure:
-  - cluster-single (AWS)
-  
-Cost:
-  - $400 × 1 = $400/mes (50% reduction)
-
-Management:
-  - 1 cluster
-  - 1 ArgoCD instance
-  
-Git:
-  - task-manager-gitops repo
-  
-Deployment:
-  Dev  ─┐
-       └─ cluster-single (namespace: dev)
-  Prod ─┘
-       └─ cluster-single (namespace: prod)
-```
-
-## Comandos Clave
+## Key Commands
 
 ```bash
-# Despliegue
+# Deployment
 kubectl apply -f clusters/single-cluster/namespace-{dev,prod}.yaml
 kubectl apply -k clusters/single-cluster/
 
-# Verificación
+# Verification
 kubectl get namespaces -l app=task-manager
 kubectl get applications -n argocd -o wide
 kubectl get deployments -n dev -n prod
 
-# Actualización (GitOps)
+# Update (GitOps)
 cd apps/task-manager/overlays/dev
 kustomize edit set image task-manager=registry/image:v1.2.3
 
-# Sincronización
+# Sync
 git add apps/task-manager/overlays/dev/kustomization.yaml
 git commit -m "chore: update dev image"
-git push  # → ArgoCD detecta y sincroniza automáticamente
+git push  # → ArgoCD detects and syncs automatically
 
-# Monitoreo
+# Monitoring
 kubectl logs -f -l app=task-manager -n dev
 kubectl rollout status deployment/task-manager -n prod
 ```
 
 ---
-
-**Estado:** ✅ Completado
-**Cluster:** 1 (single)
-**Namespaces:** 2 (dev, prod)
-**Applications (ArgoCD):** 2 (task-manager-dev, task-manager-prod)

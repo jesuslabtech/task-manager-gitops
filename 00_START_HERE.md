@@ -1,22 +1,14 @@
-# 🎊 IMPLEMENTACIÓN EXITOSA
+# START HERE
 
-## Resumen Final de Cambios
-
-Tu repositorio `task-manager-gitops` ha sido **completamente adaptado** para usar un solo cluster con dos namespaces.
-
----
-
-## 📊 Archivos Creados
-
-### ✅ Code (Infraestructura Kubernetes)
+## Code (Kubernetes Infrastructure)
 
 **Overlays - Development**
 - `apps/task-manager/overlays/dev/kustomization.yaml` - Namespace dev, 1 replica
-- `apps/task-manager/overlays/dev/patch-deployment.yaml` - Config dev
+- `apps/task-manager/overlays/dev/patch-deployment.yaml` - Dev config
 
 **Overlays - Production**
 - `apps/task-manager/overlays/prod/kustomization.yaml` - Namespace prod, 3 replicas
-- `apps/task-manager/overlays/prod/patch-deployment.yaml` - Config prod
+- `apps/task-manager/overlays/prod/patch-deployment.yaml` - Prod config
 
 **Cluster - Single Cluster**
 - `clusters/single-cluster/kustomization.yaml` - Root config
@@ -25,26 +17,20 @@ Tu repositorio `task-manager-gitops` ha sido **completamente adaptado** para usa
 - `clusters/single-cluster/task-manager-dev-application.yaml` - ArgoCD app
 - `clusters/single-cluster/task-manager-prod-application.yaml` - ArgoCD app
 
-### 📖 Documentación (7 archivos)
+### 📖 Documentation (7 files)
 
-- `QUICKSTART.md` - Guía rápida (3 pasos)
-- `ARCHITECTURE_DETAIL.md` - Diagramas y explicación
-- `VALIDATION.md` - Cómo validar
-- `MIGRATION_SUMMARY.md` - Qué cambió
-- `README_IMPLEMENTATION.md` - Guía completa
-- `STATUS.md` - Estado del proyecto
-- `IMPLEMENTATION_COMPLETE.md` - Este resumen
+- `02_QUICKSTART.md` - Quick guide (3 steps)
+- `03_ARCHITECTURE_DETAIL.md` - Diagrams and explanation
+- `04_VALIDATION.md` - How to validate
+- `05_STATUS.md` - Project status
+- `IMPLEMENTATION_COMPLETE.md` - This summary
 
 ---
 
-## 🎯 Estructura Conseguida
+## 🎯 Structure Achieved
 
 ```
-ANTES (2 Clusters):
-  cluster-dev/  → gitops-dev
-  cluster-prod/ → gitops-prod
-
-AHORA (1 Cluster):
+(1 Cluster):
   single-cluster/
     ├── namespace: dev   (1 replica)
     └── namespace: prod  (3 replicas)
@@ -52,39 +38,39 @@ AHORA (1 Cluster):
 
 ---
 
-## 🚀 Para Desplegar (4 Pasos)
+## 🚀 To Deploy (4 Steps)
 
-### ⚠️ Paso 0: Instalar ArgoCD PRIMERO
+### ⚠️ Step 0: Install ArgoCD FIRST
 
-**ArgoCD debe estar instalado antes de crear las Applications.**
+**ArgoCD must be installed before creating the Applications.**
 
 ```bash
-# Crear namespace de ArgoCD
+# Create ArgoCD namespace
 kubectl create namespace argocd
 
-# Instalar ArgoCD
+# Install ArgoCD
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-# Esperar a que esté listo (2-3 minutos)
+# Wait for it to be ready (2-3 minutes)
 kubectl wait --for=condition=available --timeout=300s \
   deployment/argocd-application-controller -n argocd
 
-# Ver guía completa en: ARGOCD_SETUP.md
+# See full guide in: 01_ARGOCD_SETUP.md
 ```
 
-### Paso 1: Crear Namespaces
+### Step 1: Create Namespaces
 
 ```bash
 kubectl apply -f clusters/single-cluster/namespace-{dev,prod}.yaml
 ```
 
-### Paso 2: Crear Applications
+### Step 2: Create Applications
 
 ```bash
 kubectl apply -k clusters/single-cluster/
 ```
 
-### Paso 3: Verificar
+### Step 3: Verify
 
 ```bash
 kubectl get applications -n argocd -o wide
@@ -92,26 +78,24 @@ kubectl get applications -n argocd -o wide
 
 ---
 
-## ✨ Lo Que Cambiará
+## 📌 Features
 
-**Costo:** ~$800/mes → ~$400/mes (50% reducción)
-**Complejidad:** 2 clusters → 1 cluster
-**Mantenimiento:** Mitad
-
----
-
-## 📌 Características
-
-✅ **GitOps Completo** - Todo en Git, ArgoCD sincroniza
-✅ **Base Compartida** - `base/` sin cambios
-✅ **Overlays Limpios** - Dev y Prod separados lógicamente
-✅ **Namespaces** - Aislamiento en un cluster
-✅ **Actualización Automática** - Edita Git, ArgoCD sincroniza
-✅ **Documentación** - 7 archivos guía
+✅ **Complete GitOps** - Everything in Git, ArgoCD syncs
+✅ **Shared Base** - `base/` unchanged
+✅ **Clean Overlays** - Dev and Prod logically separated
+✅ **Namespaces** - Isolation in one cluster
+✅ **Automatic Update** - Edit Git, ArgoCD syncs
+✅ **Documentation** - 7 guide files
 
 ---
 
-## 🔄 Actualizar Imagen (GitOps)
+## 🔄 Update Image (GitOps)
+
+**⚠️ Note:** This is a manual test to verify that ArgoCD sync the app. In production, this process is done by git commits to `your-app-gitops` repo.
+
+### Prerequisites
+
+You probably need the kustomize binary to exec some commands. Install it.
 
 ```bash
 cd apps/task-manager/overlays/dev
@@ -120,15 +104,15 @@ cd -
 git add apps/task-manager/overlays/dev/kustomization.yaml
 git commit -m "chore: update dev image"
 git push
-# → ArgoCD sincroniza automáticamente ✨
+# → ArgoCD syncs automatically ✨
 ```
 
 ---
 
-## ✅ Verificación
+## ✅ Verification
 
 ```bash
-# Validar sintaxis
+# Validate syntax
 kubectl kustomize apps/task-manager/overlays/dev > /dev/null && echo "✓"
 kubectl kustomize apps/task-manager/overlays/prod > /dev/null && echo "✓"
 kubectl kustomize clusters/single-cluster > /dev/null && echo "✓"
@@ -136,54 +120,48 @@ kubectl kustomize clusters/single-cluster > /dev/null && echo "✓"
 
 ---
 
-## 📚 Documentación
+## 📚 Documentation
 
-| Archivo | Lee esto para... |
+| File | Read this to... |
 |---------|------------------|
-| **QUICKSTART.md** | Desplegar rápido |
-| **ARCHITECTURE_DETAIL.md** | Entender la estructura |
-| **VALIDATION.md** | Validar cambios |
-| **README_IMPLEMENTATION.md** | Guía completa |
+| **QUICKSTART.md** | Deploy quickly |
+| **ARCHITECTURE_DETAIL.md** | Understand the structure |
+| **VALIDATION.md** | Validate changes |
+| **README_IMPLEMENTATION.md** | Complete guide |
 
 ---
 
-## 🎓 Conceptos Clave
+## 🎓 Key Concepts
 
-1. **Base** = Archivos compartidos (deployment, service, etc.)
-2. **Overlays** = Personalizaciones por entorno (dev/prod)
-3. **Kustomize** = Combina base + overlay → manifiestos finales
-4. **Namespaces** = Aislamiento lógico en UN cluster
-5. **ArgoCD** = Sincroniza Git → Cluster automáticamente
+1. **Base** = Shared files (deployment, service, etc.)
+2. **Overlays** = Customizations per environment (dev/prod)
+3. **Kustomize** = Combines base + overlay → final manifests
+4. **Namespaces** = Logical isolation in ONE cluster
+5. **ArgoCD** = Syncs Git → Cluster automatically
 
 ---
 
-## ✅ Estado Final
+## ✅ Final Status
 
-| Componente | Estado |
+| Component | Status |
 |-----------|--------|
-| **Overlays dev/prod** | ✅ Creados |
-| **Cluster single** | ✅ Creado |
-| **Namespaces** | ✅ Definidos |
-| **Applications ArgoCD** | ✅ Listos |
-| **Documentación** | ✅ Completa |
-| **Base sin cambios** | ✅ Intacta |
+| **Overlays dev/prod** | ✅ Created |
+| **Cluster single** | ✅ Created |
+| **Namespaces** | ✅ Defined |
+| **ArgoCD Applications** | ✅ Ready |
+| **Documentation** | ✅ Complete |
+| **Base unchanged** | ✅ Intact |
 
 ---
 
-## 🎉 LISTO PARA DESPLEGAR
+## 🎉 READY TO DEPLOY
 
-**Próximo paso:** Sigue `QUICKSTART.md`
+**Next step:** Follow `02_QUICKSTART.md`
 
 ```bash
-# Comando rápido para desplegar todo:
+# Quick command to deploy everything:
 kubectl apply -f clusters/single-cluster/namespace-dev.yaml && \
 kubectl apply -f clusters/single-cluster/namespace-prod.yaml && \
 kubectl apply -k clusters/single-cluster/ && \
-echo "✅ Listo! Verifica con: kubectl get applications -n argocd"
+echo "✅ Done! Verify with: kubectl get applications -n argocd"
 ```
-
----
-
-**Completado:** 13 de febrero de 2026  
-**Rama:** chore/update-repo-structure  
-**Estado:** ✅ Listo para usar
