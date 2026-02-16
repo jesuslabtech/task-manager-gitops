@@ -2,6 +2,8 @@
 
 A GitOps repository for deploying a Task Manager application on a Kubernetes cluster using Kustomize and ArgoCD.
 
+**You can see the application repo following this link:** https://github.com/jesuslabtech/task-manager-app
+
 ## Repository Purpose
 
 This repository contains Kubernetes manifests that define the desired state of the Task Manager application. It follows the GitOps philosophy where the repository serves as the single source of truth for infrastructure and application configuration.
