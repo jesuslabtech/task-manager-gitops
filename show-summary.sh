@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# 📊 Visualizar estructura final del repositorio adaptado
+# 📊 Visualize final structure of adapted repository
 
 cat << 'EOF'
 
 ╔═══════════════════════════════════════════════════════════════════════╗
-║                  ✅ ADAPTACIÓN COMPLETADA                            ║
+║                  ✅ ADAPTATION COMPLETED                            ║
 ║              Single Cluster + Namespaces (dev/prod)                  ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 
-📊 ARCHIVOS CREADOS
-─────────────────────────────────────────────────────────────────────────
+📊 FILES CREATED
+────────────────────────────────────────────────────────────────────────
 
 ✅ apps/task-manager/overlays/dev/
    ├── kustomization.yaml      (namespace: dev, 1 replica)
@@ -27,20 +27,20 @@ cat << 'EOF'
    ├── task-manager-dev-application.yaml
    └── task-manager-prod-application.yaml
 
-📖 DOCUMENTACIÓN (7 archivos)
-─────────────────────────────────────────────────────────────────────────
+📖 DOCUMENTATION (7 files)
+────────────────────────────────────────────────────────────────────────
 
-✅ 00_EMPIEZA_AQUI.md          ← Lee esto primero
-✅ QUICKSTART.md               ← 3 pasos para desplegar
-✅ ARCHITECTURE_DETAIL.md      ← Diagramas y flujos
-✅ VALIDATION.md               ← Cómo validar
-✅ IMPLEMENTATION_COMPLETE.md  ← Resumen de implementación
-✅ README_IMPLEMENTATION.md    ← Guía técnica completa
-✅ STATUS.md                   ← Estado del proyecto
+✅ 00_START_HERE.md          ← Read this first
+✅ 02_QUICKSTART.md               ← 3 steps to deploy
+✅ 03_ARCHITECTURE_DETAIL.md      ← Diagrams and flows
+✅ 04_VALIDATION.md               ← How to validate
+✅ 05_IMPLEMENTATION_COMPLETE.md  ← Implementation summary
+✅ 06_README_IMPLEMENTATION.md    ← Complete technical guide
+✅ 07_STATUS.md                   ← Project status
 
-─────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────
 
-🎯 ESTRUCTURA FINAL
+🎯 FINAL STRUCTURE
 
     SINGLE CLUSTER (1)
     ├── namespace: dev
@@ -53,24 +53,24 @@ cat << 'EOF'
         ├── Application: task-manager-dev  → overlays/dev
         └── Application: task-manager-prod → overlays/prod
 
-─────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────
 
-🚀 DESPLIEGUE RÁPIDO (3 PASOS)
+🚀 QUICK DEPLOYMENT (3 STEPS)
 
-Step 1: Crear Namespaces
+Step 1: Create Namespaces
 $ kubectl apply -f clusters/single-cluster/namespace-{dev,prod}.yaml
 
-Step 2: Crear Applications
+Step 2: Create Applications
 $ kubectl apply -k clusters/single-cluster/
 
-Step 3: Verificar
+Step 3: Verify
 $ kubectl get applications -n argocd -o wide
 
-→ ¡Listo! ArgoCD sincroniza automáticamente.
+→ Done! ArgoCD syncs automatically.
 
-─────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────
 
-📝 ACTUALIZAR IMAGEN (GitOps)
+📝 UPDATE IMAGE (GitOps)
 
 Development:
 $ cd apps/task-manager/overlays/dev
@@ -87,55 +87,32 @@ $ git add apps/task-manager/overlays/*/kustomization.yaml
 $ git commit -m "chore: update image tags"
 $ git push
 
-→ ArgoCD detecta y sincroniza automáticamente (~30 segundos)
+→ ArgoCD detects and syncs automatically (~30 seconds)
 
-─────────────────────────────────────────────────────────────────────────
-
-✨ BENEFICIOS
-
-Before          After
-─────────────────────────────────────────────────
-2 clusters  →   1 cluster
-$800/mes    →   $400/mes (50% reduction)
-2 ArgoCD    →   1 ArgoCD
-Complex     →   Simple
-2 bases     →   1 base (shared)
-
-─────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────
 
 ✅ CHECKLIST
 
-[✓] Overlays dev y prod creados
-[✓] Cluster single-cluster creado
-[✓] Namespaces dev y prod definidos
-[✓] Applications ArgoCD configuradas
-[✓] Documentación completa
-[✓] Base sin cambios
-[✓] Listo para desplegar
+[✓] Dev and prod overlays created
+[✓] Single-cluster created
+[✓] Dev and prod namespaces defined
+[✓] ArgoCD Applications configured
+[✓] Documentation complete
+[✓] Base unchanged
+[✓] Ready to deploy
 
-─────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────────
 
-📚 DOCUMENTACIÓN
+📚 DOCUMENTATION
 
-Empieza por: 00_EMPIEZA_AQUI.md
+Start with: 00_START_HERE.md
 
-Para desplegar rápido: QUICKSTART.md
+To deploy quickly: 02_QUICKSTART.md
 
-Para entender: ARCHITECTURE_DETAIL.md
+To understand: 03_ARCHITECTURE_DETAIL.md
 
-Para validar: VALIDATION.md
-
-─────────────────────────────────────────────────────────────────────────
-
-🎉 IMPLEMENTACIÓN COMPLETA
-
-Estado: ✅ Listo para usar
-Rama: chore/update-repo-structure
-Fecha: 13 de febrero de 2026
-
-─────────────────────────────────────────────────────────────────────────
-
-Próximo paso: Lee 00_EMPIEZA_AQUI.md y sigue QUICKSTART.md
+To validate: 04_VALIDATION.md
+────────────────────────────────────────────────────────────────────────
 
 EOF
 
